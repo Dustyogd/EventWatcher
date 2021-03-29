@@ -1,7 +1,3 @@
-# CollegeEventWatcher
-This program is supposed to view when a program has start Examples being Notepad, Microsoft word, google chrome, etc. it will show what time the program has started and what time the program was closed out. and then this info would be stored in a database
-
-```
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -36,6 +32,7 @@ namespace WindowsFormsApp8
             AppStartQuery.EventArrived += new EventArrivedEventHandler(StartedProcess);
             AppStartQuery.Start();
 
+
             AppStopQuery.EventArrived += new EventArrivedEventHandler(StoppedProcess);
             AppStopQuery.Start();
 
@@ -53,23 +50,40 @@ namespace WindowsFormsApp8
                 int processID = Process.GetProcessById(processStart.Id).Id;
                 string processName = Process.GetProcessById(processStart.Id).ProcessName;
                 string name = "Process Name: ";
-                //Process[] procname = Process.GetProcessesByName(Convert.ToInt32(e.NewEvent.Properties["notepad"].Value.ToString());
-                if (processName == "notepad")
+
+                if (processName == "SnippingTool")
                 {
-                    ProcessStart.Invoke(new Action(() => {
+                    ProcessStart.Invoke(new Action(() =>
+                    {
                         ProcessStart.Text = ProcessStart.Text + DateTime.Now.ToString("MM/dd/yyyy hh:mm tt | ")
                         + name.ToString() + processName.ToString() + processID.ToString(@" ID:0") + Environment.NewLine;
                     }));
                 }
-
-
-
-                //richtextbox
-
-                /*ProcessStart.Invoke(new Action(() => {
-                    ProcessStart.Text = ProcessStart.Text + DateTime.Now.ToString("MM/dd/yyyy hh:mm tt | ")
-                    + name.ToString() + processName.ToString() + processID.ToString(@" ID:0") + Environment.NewLine;
-                }));*/
+                else if (processName == "notepad")
+                {
+                    ProcessStart.Invoke(new Action(() =>
+                    {
+                        ProcessStart.Text = ProcessStart.Text + DateTime.Now.ToString("MM/dd/yyyy hh:mm tt | ")
+                        + name.ToString() + processName.ToString() + processID.ToString(@" ID:0") + Environment.NewLine;
+                    }));
+                }
+                else if (processName == "chrome")
+                {
+                    ProcessStart.Invoke(new Action(() =>
+                    {
+                        ProcessStart.Text = ProcessStart.Text + DateTime.Now.ToString("MM/dd/yyyy hh:mm tt | ")
+                        + name.ToString() + processName.ToString() + processID.ToString(@" ID:0") + Environment.NewLine;
+                    }));
+                }
+                else if (processName == "firefox")
+                {
+                    ProcessStart.Invoke(new Action(() =>
+                    {
+                        ProcessStart.Text = ProcessStart.Text + DateTime.Now.ToString("MM/dd/yyyy hh:mm tt | ")
+                        + name.ToString() + processName.ToString() + processID.ToString(@" ID:0") + Environment.NewLine;
+                    }));
+                }
+               
 
             }
             catch (Exception ee)
@@ -78,29 +92,49 @@ namespace WindowsFormsApp8
             }
         }
 
-
+        
 
         private void StoppedProcess(object sender, EventArrivedEventArgs e)
         {
             try
             {
 
-                var processStop = Process.GetProcessById(Convert.ToInt32(e.NewEvent.Properties["processID"].Value.ToString()));
-
-                //int processID = Process.GetProcessById(processStop.Id).Id;
-
+                
                 int processID = Convert.ToInt32(e.NewEvent.Properties["ProcessID"].Value.ToString());
-                //string processNamee = Process.GetProcessById(processStop.Id).ProcessName;
                 string processName = e.NewEvent.Properties["ProcessName"].Value.ToString();
                 string namee = "Process Name: ";
-                if (processName == "notepad")
+                if(processName == "notepad.exe")
+                {
+                    ProcessStop.Invoke(new Action(() => { ProcessStop.Text = ProcessStop.Text + DateTime.Now.ToString("MM/dd/yyyy hh:mm tt | ") 
+                        + namee.ToString() + processName.ToString() + processID.ToString(@"   ID:0") + Environment.NewLine; }));
+
+                }
+                else if(processName == "SnippingTool.e")
                 {
                     ProcessStop.Invoke(new Action(() => {
-                        ProcessStop.Text = ProcessStop.Text
-                        + DateTime.Now.ToString("MM/dd/yyyy hh:mm tt | ") + namee.ToString() + processName.ToString()
-                        + processID.ToString(@"   ID:0") + Environment.NewLine;
+                        ProcessStop.Text = ProcessStop.Text + DateTime.Now.ToString("MM/dd/yyyy hh:mm tt | ")
+                        + namee.ToString() + processName.ToString() + processID.ToString(@"   ID:0") + Environment.NewLine;
                     }));
                 }
+                else if(processName == "chrome.exe")
+                {
+                 ProcessStop.Invoke(new Action(() => {
+                        ProcessStop.Text = ProcessStop.Text + DateTime.Now.ToString("MM/dd/yyyy hh:mm tt | ")
+                        + namee.ToString() + processName.ToString() + processID.ToString(@"   ID:0") + Environment.NewLine;
+                    }));
+                }
+                else if(processName == "firefox.exe")
+                {
+                ProcessStop.Invoke(new Action(() => {
+                        ProcessStop.Text = ProcessStop.Text + DateTime.Now.ToString("MM/dd/yyyy hh:mm tt | ")
+                        + namee.ToString() + processName.ToString() + processID.ToString(@"   ID:0") + Environment.NewLine;
+                    }));
+                }
+                /*ProcessStop.Invoke(new Action(() => 
+                {
+                    ProcessStop.Text = ProcessStop.Text + DateTime.Now.ToString("MM/dd/yyyy hh:mm tt | ")
+                    + namee.ToString() + processName.ToString() + processID.ToString(@"   ID:0") + Environment.NewLine;
+                }));*/
 
 
             }
@@ -115,4 +149,3 @@ namespace WindowsFormsApp8
         }
     }
 }
-```
