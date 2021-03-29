@@ -1,3 +1,5 @@
+The code can now pick up the filters that are in place ISSUE i need to figure out how to get it were chrome does not spam 8 version's of its self
+
 ```using System;
 using System.Collections.Generic;
 using System.ComponentModel;
