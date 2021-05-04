@@ -1,0 +1,159 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Diagnostics;
+using System.Management;
+using System.Runtime.InteropServices;
+using Microsoft.Win32;
+using MySql;
+using MySql.Data.MySqlClient;
+using System.Data.SqlClient;
+
+namespace WindowsFormsApp8
+{
+    public partial class Form1 : Form
+    {
+        string connectionString = " server=" + "127.0.0.2" + ";database=processwatcher;username=root" + ";pwd="; //connection string to the mysql database
+
+        MySqlConnection connection;
+        struct APPINFO
+        {
+
+        }
+
+        private readonly List<APPINFO> currentlyRunningProcesses = new List<APPINFO>();
+
+        public Form1()
+        {
+           
+            InitializeComponent();
+
+            
+
+
+
+            ManagementEventWatcher AppStartQuery = new ManagementEventWatcher(new WqlEventQuery("SELECT * FROM Win32_ProcessStartTrace")); //the code to trace background process
+            ManagementEventWatcher AppStopQuery = new ManagementEventWatcher(new WqlEventQuery("SELECT * FROM Win32_ProcessStopTrace"));
+
+
+            AppStartQuery.EventArrived += new EventArrivedEventHandler(StartedProcess);
+            AppStartQuery.Start();
+
+
+            AppStopQuery.EventArrived += new EventArrivedEventHandler(StoppedProcess);
+            AppStopQuery.Start();
+
+            
+
+            Console.WriteLine("Exit");
+            Console.ReadLine();
+
+
+        }
+
+        private void StartedProcess(object sender, EventArrivedEventArgs e)
+        {
+            
+            try
+            {
+                
+
+                var processStart = Process.GetProcessById(Convert.ToInt32(e.NewEvent.Properties["processID"].Value.ToString())); //this will grab the id of when a process starts
+                int processID = Process.GetProcessById(processStart.Id).Id;
+                string processName = Process.GetProcessById(processStart.Id).ProcessName; // this will take the id and display its name
+                string datatime =  DateTime.Now.ToString("MM/dd/yyyy hh:mm tt"); //time stamp
+                string[] applist = { "notepad", "SnippingTool", "chrome" }; // filter's for what i wanted to display
+
+                if (applist.Contains(processName))
+                    try {
+                        {
+                            connection = new MySqlConnection(connectionString);
+                            connection.Open();
+
+                            Test1.Invoke(new Action(() => Test1.Text = Test1.Text + processName.ToString() + datatime.ToString()));
+                            string Query = "insert into dataprocess(dataprocessname, datadatetime) values ('" + processName +"' , '"+ datatime +"');";     //insert code into database                      
+                            MySqlCommand MyCommand2 = new MySqlCommand(Query , connection);
+
+                            
+                            MyCommand2.ExecuteNonQuery();
+
+                            
+                            
+                        }
+                    }
+                    catch(SqlException eee)
+                    {
+                        
+
+                    }
+                    finally
+                    {
+                        connection.Close();
+                    }
+
+            }
+            catch (Exception ee)
+            {
+                Console.WriteLine("Start Process Exception: " + ee.Message);
+            }
+        }
+        
+
+        
+        private void StoppedProcess(object sender, EventArrivedEventArgs e)
+        {
+            try
+            {
+
+                
+                int processID = Convert.ToInt32(e.NewEvent.Properties["ProcessID"].Value.ToString());
+                string processName = e.NewEvent.Properties["ProcessName"].Value.ToString();
+                string namee = "Process Name: ";
+                string datatimeEnd = DateTime.Now.ToString("MM/dd/yyyy hh:mm tt");
+                string[] applist = { "notepad.exe", "SnippingTool.e", "chrome.exe", "firefox.exe" };
+
+                if (applist.Contains(processName))
+                    try
+                    {
+                        {
+                            connection = new MySqlConnection(connectionString);
+                            connection.Open();
+
+                            ProcessStop.Invoke(new Action(() => ProcessStop.Text = ProcessStop.Text + processName.ToString() + datatimeEnd.ToString()));
+                            string Query = "insert into stopdataprocess(dataprocessname, datadatetime) values ('" + processName + "' , '" + datatimeEnd + "');";
+
+                            MySqlCommand Mycommand = new MySqlCommand(Query, connection);
+
+                            Mycommand.ExecuteNonQuery();
+                        }
+                    }
+                    catch(SqlException eee)
+                    {
+
+                    }
+                    finally
+                    {
+                        connection.Close();
+                    }
+                
+
+
+
+            }
+            catch (Exception ee)
+            {
+                Console.WriteLine("Stop Process Exception: " + ee.Message);
+            }
+        }
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+    }
+}
